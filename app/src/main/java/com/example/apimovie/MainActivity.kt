@@ -27,6 +27,9 @@ import androidx.compose.ui.unit.dp
 import coil.Coil
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.bumptech.glide.integration.compose.GlideImage
+import com.example.apimovie.Constant.MOVIE_IMAGE_BASE_URL
+import com.example.apimovie.model.ImageSize
 import com.example.apimovie.model.UIState
 import com.example.apimovie.presentation.screens.popular.PopularViewModel
 import com.example.apimovie.ui.theme.ApiMovieTheme
@@ -42,17 +45,17 @@ class MainActivity : ComponentActivity() {
             ApiMovieTheme {
                 when (val result = viewModel.popularMovieState.value) {
                     is UIState.Success -> {
-                        Box(){
-                        Image(
-                            painter = painterResource(id = R.drawable.background),
-                            contentDescription = ""
-                        )
+                        Box(modifier = Modifier.paint(painterResource(id = R.drawable.background))) {
+
 
                         LazyColumn(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .background(color = MaterialTheme.colorScheme.primaryContainer)
                         ) {
+                            items(result.data?.results.orEmpty()){
+                                
+                            }
 
                             items(result.data?.results.orEmpty()) {
 
@@ -60,6 +63,8 @@ class MainActivity : ComponentActivity() {
                                     text = it.title.orEmpty(),
                                     modifier = Modifier.padding(12.dp)
                                 )
+                                AsyncImage(model = "${MOVIE_IMAGE_BASE_URL}${ImageSize.w300}/${it.backdropPath}",contentDescription="movie image" )
+
 
                                 // AsyncImage(model = result.data?.results[it.backdropPath], contentDescription = "image")
                                 //AsyncImage(model = ImageRequest.Builder(context = LocalContext.current).data(Constant.MOVIE_BASE_URL.plus(it.backdropPath)).build(), contentDescription = "image")
