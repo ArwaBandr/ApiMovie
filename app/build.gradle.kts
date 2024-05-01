@@ -57,6 +57,8 @@ android {
 dependencies {
     //hilt
     implementation(libs.hilt.android)
+    implementation(libs.androidx.navigation.runtime.ktx)
+    implementation(libs.androidx.navigation.compose)
     kapt(libs.hilt.android.compiler)
 
 
@@ -102,4 +104,5 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 }
