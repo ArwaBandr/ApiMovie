@@ -22,14 +22,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.apimovie.R
 import com.example.apimovie.presentation.navigation.Scrrens
@@ -137,13 +138,15 @@ fun SecondScren() {
 
 @Composable
 fun ThirdScren(navController: NavHostController) {
+    val context = LocalContext.current
 
+    val dataStore=DataStore(context)
     Column(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.onSecondary)
             .fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(30.dp),
-       // horizontalAlignment = Alignment.CenterHorizontally
+        // horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
             modifier = Modifier
@@ -162,8 +165,7 @@ fun ThirdScren(navController: NavHostController) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .align(Alignment.Bottom)
-                    , contentAlignment = Alignment.Center
+                    .align(Alignment.Bottom), contentAlignment = Alignment.Center
             )
             {
 
@@ -178,7 +180,11 @@ fun ThirdScren(navController: NavHostController) {
                 )
                 Button(
                     //modifier = Modifier.align(Alignment.BottomCenter),
-                    onClick = { navController.navigate(Scrrens.mainScreen.rout) }) {
+                    onClick = {
+                        dataStore.DoneOnBoardingHelper(false, context = context)
+                        navController.navigate(Scrrens.mainScreen.rout)
+
+                    }) {
                     Text(text = "lets get started")
                 }
 
