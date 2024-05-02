@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.apimovie.R
 import com.example.apimovie.presentation.navigation.Scrrens
+import com.example.apimovie.presentation.navigation.popUpToTop
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -41,7 +42,9 @@ fun OnBoardingScreen(OnBoardingViewModel: OnBoardingViewModel, navController: Na
     val onBoardingComleted by OnBoardingViewModel.OnBoardingCompleted.collectAsState()
 
     if(onBoardingComleted){
-        navController.navigate(Scrrens.mainScreen.rout)
+        navController.navigate(Scrrens.mainScreen.rout){
+            popUpToTop(navController)
+        }
     }else{
     val pagerState = rememberPagerState { 3 }
     HorizontalPager(
@@ -79,6 +82,8 @@ fun OnBoardingScreen(OnBoardingViewModel: OnBoardingViewModel, navController: Na
         }
     }
 }}
+
+
 
 @Composable
 fun FirstScren() {
@@ -186,7 +191,9 @@ fun ThirdScren(navController: NavHostController, FinshOnBoarding: () -> Unit) {
                 )
                 Button(
                     onClick = {
-                        navController.navigate(Scrrens.mainScreen.rout)
+                        navController.navigate(Scrrens.mainScreen.rout){
+                            popUpToTop(navController)
+                        }
                         FinshOnBoarding.invoke()
                     }) {
                     Text(text = "lets get started")
