@@ -21,23 +21,28 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.apimovie.R
 import com.example.apimovie.presentation.navigation.Scrrens
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun OnBoardingScreen(navController: NavHostController) {
+fun OnBoardingScreen(OnBoardingViewModel: OnBoardingViewModel, navController: NavHostController) {
+    val onBoardingComleted by OnBoardingViewModel.OnBoardingCompleted.collectAsState()
+
+    if(onBoardingComleted){
+        navController.navigate(Scrrens.mainScreen.rout)
+    }else{
     val pagerState = rememberPagerState { 3 }
     HorizontalPager(
         state = pagerState,
@@ -48,7 +53,10 @@ fun OnBoardingScreen(navController: NavHostController) {
         when (pagerState.currentPage) {
             0 -> FirstScren()
             1 -> SecondScren()
-            2 -> ThirdScren(navController)
+            2 -> ThirdScren(navController){
+                OnBoardingViewModel.saveOnBoardingState(true)
+            }
+
         }
     }
     Row(
@@ -70,7 +78,7 @@ fun OnBoardingScreen(navController: NavHostController) {
             )
         }
     }
-}
+}}
 
 @Composable
 fun FirstScren() {
@@ -137,10 +145,9 @@ fun SecondScren() {
 }
 
 @Composable
-fun ThirdScren(navController: NavHostController) {
-    val context = LocalContext.current
+fun ThirdScren(navController: NavHostController, FinshOnBoarding: () -> Unit) {
 
-    val dataStore=DataStore(context)
+
     Column(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.onSecondary)
@@ -157,7 +164,6 @@ fun ThirdScren(navController: NavHostController) {
                     contentScale = ContentScale.FillBounds,
                     sizeToIntrinsics = false
                 )
-            //.padding(bottom = 60.dp)
         )
 
         //Spacer(modifier = Modifier.padding(30.dp))
@@ -175,15 +181,13 @@ fun ThirdScren(navController: NavHostController) {
                     modifier = Modifier
                         .fillMaxSize()
                         .rotate(-90f)
-                        .fillMaxSize()//.align(Alignment.BottomCenter)
+                        .fillMaxSize()
 
                 )
                 Button(
-                    //modifier = Modifier.align(Alignment.BottomCenter),
                     onClick = {
-                        dataStore.DoneOnBoardingHelper(false, context = context)
                         navController.navigate(Scrrens.mainScreen.rout)
-
+                        FinshOnBoarding.invoke()
                     }) {
                     Text(text = "lets get started")
                 }

@@ -1,13 +1,16 @@
 package com.example.apimovie.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.apimovie.MainScreen
 import com.example.apimovie.presentation.screens.OnBoardingScreen.OnBoardingScreen
+import com.example.apimovie.presentation.screens.OnBoardingScreen.OnBoardingViewModel
 import com.example.apimovie.presentation.screens.OnBoardingScreen.ThirdScren
+import com.example.apimovie.presentation.screens.popular.PopularViewModel
 
 
 sealed class Scrrens(val rout: String) {
@@ -16,17 +19,24 @@ sealed class Scrrens(val rout: String) {
     object OnboardingScreen:Scrrens("OnBoarding")
 }
 
+
 @Composable
 fun NavGraph(navController: NavHostController = rememberNavController()) {
-    NavHost(navController = navController, startDestination = Scrrens.OnboardingScreen.rout) {
+
+    val OnBoardingViewModel:OnBoardingViewModel= hiltViewModel()
+
+    NavHost(navController = navController, startDestination = OnBoardingViewModel.startDistination ) {
         composable(Scrrens.OnboardingScreen.rout){
-            OnBoardingScreen(navController)
+            OnBoardingScreen(OnBoardingViewModel,navController)
         }
         composable(Scrrens.endOfONboardingScreen.rout) {
-            ThirdScren(navController)
+            ThirdScren(navController) {
+                OnBoardingViewModel.saveOnBoardingState(true)
+            }
         }
         composable(Scrrens.mainScreen.rout) {
-            MainScreen()
+           val viewModel= hiltViewModel<PopularViewModel>()
+            MainScreen(navController,viewModel.popularMovieState)
         }
 
     }
