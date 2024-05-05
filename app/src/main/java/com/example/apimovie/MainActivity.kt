@@ -6,16 +6,27 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.layout.ContentScale
@@ -23,148 +34,81 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.apimovie.Constant.MOVIE_IMAGE_BASE_URL
 import com.example.apimovie.model.ImageSize
 import com.example.apimovie.model.SearchResponse
 import com.example.apimovie.model.UIState
+import com.example.apimovie.presentation.navigation.BottomNavigationItem
 import com.example.apimovie.presentation.navigation.NavGraph
+import com.example.apimovie.presentation.navigation.Scrrens
+import com.example.apimovie.presentation.navigation.popUpToTop
 import com.example.apimovie.presentation.screens.popular.PopularViewModel
 import com.example.apimovie.ui.theme.ApiMovieTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class  MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
        // val viewModel by viewModels<PopularViewModel>()
         super.onCreate(savedInstanceState)
-
-
-
-
-
         setContent {
             ApiMovieTheme {
-                NavGraph()
-//                when (val result = viewModel.popularMovieState.value) {
-//                    is UIState.Success -> {
-//                        Box(
-//                            modifier = Modifier
-//                                .fillMaxSize()
-//                                .background(MaterialTheme.colorScheme.primary)
-//                        ) {
-//                            Box(modifier = Modifier
-//                                .fillMaxWidth()
-//                                .fillMaxHeight(0.4f)
-//                                .paint(
-//                                    painterResource(id = R.drawable.background),
-//                                    contentScale = ContentScale.FillBounds,
-//                                    sizeToIntrinsics = false
-//                                )
-//                            )
-//
-//                            LazyColumn(
-//                                modifier = Modifier
-//                                    .fillMaxSize()
-//
-//                            ) {
-//
-//                                items(result.data?.results.orEmpty()) {
-//
-//                                    Text(
-//                                        text = it.title.orEmpty(),
-//                                        modifier = Modifier.padding(12.dp)
-//                                    )
-//                                    AsyncImage(
-//                                        model = "${MOVIE_IMAGE_BASE_URL}${ImageSize.w300}/${it.backdropPath}",
-//                                        contentDescription = "movie image"
-//                                    )
-//
-//
-//                                    // AsyncImage(model = result.data?.results[it.backdropPath], contentDescription = "image")
-//                                    //AsyncImage(model = ImageRequest.Builder(context = LocalContext.current).data(Constant.MOVIE_BASE_URL.plus(it.backdropPath)).build(), contentDescription = "image")
-//                                }
-//
-//                            }
-//                        }
-//
-//                    }
-//
-//                    is UIState.Empty -> {}
-//                    is UIState.Loading -> {}
-//                    is UIState.Error -> {}
-//                }
-            }
-        }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Composable
-fun MainScreen(
-    navController: NavHostController,
-    popularMovieState: MutableState<UIState<SearchResponse>>
-){
-    Column(modifier = Modifier.fillMaxSize().background(color = MaterialTheme.colorScheme.primary)) {
-
-
-        when (val result = popularMovieState.value) {
-            is UIState.Success -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.primary)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight(0.4f)
-                            .paint(
-                                painterResource(id = R.drawable.background),
-                                contentScale = ContentScale.FillBounds,
-                                sizeToIntrinsics = false
-                            )
-                    )
-
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-
-                    ) {
-
-                        items(result.data?.results.orEmpty()) {
-
-                            Text(
-                                text = it.title.orEmpty(),
-                                modifier = Modifier.padding(12.dp)
-                            )
-                            AsyncImage(
-                                model = "${MOVIE_IMAGE_BASE_URL}${ImageSize.w300}/${it.backdropPath}",
-                                contentDescription = "movie image"
-                            )
-
-
-                            // AsyncImage(model = result.data?.results[it.backdropPath], contentDescription = "image")
-                            //AsyncImage(model = ImageRequest.Builder(context = LocalContext.current).data(Constant.MOVIE_BASE_URL.plus(it.backdropPath)).build(), contentDescription = "image")
-                        }
-
-                    }
+                val navController = rememberNavController()
+                var showBottomBar by rememberSaveable {
+                    mutableStateOf(true)
+                }
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                showBottomBar =when(navBackStackEntry?.destination?.route){
+                    Scrrens.OnboardingScreen.rout -> false
+                    else -> true
+                }
+                val navigationSelectedItem = rememberSaveable {
+                    mutableIntStateOf(0)
                 }
 
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    bottomBar = {
+                        if (showBottomBar) {
+                            NavigationBar {
+                                BottomNavigationBar(navigationSelectedItem,navController)
+                            }
+                        }
+                        }
+                ){
+                    paddingValues ->
+                    Box (modifier = Modifier.padding(paddingValues)){
+                        NavGraph(navController)
+                    }
+                }
             }
-
-            is UIState.Empty -> {}
-            is UIState.Loading -> {}
-            is UIState.Error -> {}
         }
-
     }
+}
 
+@Composable
+private fun RowScope.BottomNavigationBar(
+    navigationSelectedItem:MutableIntState,
+    navController :NavHostController
+)
+{
+
+    BottomNavigationItem().bottomNavigationItem()
+        .forEachIndexed { index, NavigationItem ->
+            NavigationBarItem(selected = index == navigationSelectedItem.intValue,
+                label = { Text(text = NavigationItem.route)},
+                icon = {
+                    Icon(NavigationItem.icon, contentDescription =NavigationItem.label )
+                },
+                onClick = {
+                    navigationSelectedItem.intValue =index
+                    navController.navigate(NavigationItem.route){
+                        popUpToTop(navController)
+                    }
+                }
+                )
+        }
 }
