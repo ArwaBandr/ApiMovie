@@ -1,6 +1,7 @@
 package com.example.apimovie.presentation.screens.popular
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,12 +34,13 @@ import com.example.apimovie.R
 import com.example.apimovie.model.ImageSize
 import com.example.apimovie.model.Results
 import com.example.apimovie.model.UIState
+import com.example.apimovie.presentation.navigation.Scrrens
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
 fun MainScreen(
     navController: NavHostController,
-    popularMovieState: MutableStateFlow<PagingData<Results>>
+    popularMovieState: MutableStateFlow<PagingData<Results>>,
 ){
 
     val moviePagingStateItem =popularMovieState.collectAsLazyPagingItems()
@@ -53,7 +55,10 @@ fun MainScreen(
                                 model = "${Constant.MOVIE_IMAGE_BASE_URL}${ImageSize.w300}/${moviePagingStateItem[index]?.posterPath}",
                                 contentDescription = "movie image",
                             modifier = Modifier
-                                .padding(2.dp),
+                                .padding(2.dp)
+                                .clickable {
+                                       navController.navigate("${Scrrens.Details.rout}/${moviePagingStateItem[index]?.id}")
+                                },
                             contentScale = ContentScale.FillWidth,
                             error = painterResource(R.drawable.ic_launcher_background),
                             placeholder = painterResource(R.drawable.ic_launcher_background)

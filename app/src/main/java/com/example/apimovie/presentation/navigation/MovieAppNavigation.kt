@@ -9,20 +9,24 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptionsBuilder
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.apimovie.presentation.screens.OnBoardingScreen.OnBoardingScreen
 import com.example.apimovie.presentation.screens.OnBoardingScreen.OnBoardingViewModel
+import com.example.apimovie.presentation.screens.details.DetailsScreen
+import com.example.apimovie.presentation.screens.details.DetailsViewModel
 import com.example.apimovie.presentation.screens.popular.MainScreen
 import com.example.apimovie.presentation.screens.popular.PopularViewModel
-import java.lang.reflect.Modifier
+import com.example.apimovie.presentation.screens.search.SearchScreen
+import com.example.apimovie.presentation.screens.search.SearchViewModel
 
 
 sealed class Scrrens(val rout: String) {
@@ -32,6 +36,8 @@ sealed class Scrrens(val rout: String) {
     object Search : Scrrens("search_rout")
 
     object Profile : Scrrens("profile_route")
+
+    object Details : Scrrens("movie_details")
 }
 
 data class BottomNavigationItem(
@@ -80,21 +86,37 @@ fun NavGraph(navController: NavHostController = rememberNavController()) {
             MainScreen(navController, viewModel.popularMovieState)
         }
         composable(Scrrens.Search.rout) {
-            Column (modifier = androidx.compose.ui.Modifier.fillMaxSize().background(MaterialTheme.colorScheme.onSecondary)){
-
-            }
+            val viewModel= hiltViewModel<SearchViewModel>()
+          SearchScreen(viewModel,navController)
         }
         composable(Scrrens.Profile.rout) {
-            Column (modifier = androidx.compose.ui.Modifier.fillMaxSize().background(MaterialTheme.colorScheme.onSecondary)){
+            Column(
+                modifier = androidx.compose.ui.Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.onSecondary)
+            ) {
 
             }
         }
 
+        composable("${Scrrens.Details.rout}/{moviId}",
+            arguments = listOf(navArgument("moviId") {
+            type= NavType.IntType
+        })
+        ) {
+            val viewModel = hiltViewModel<DetailsViewModel>()
+            DetailsScreen(
+                it.arguments?.getInt("moviId"),
+                navController = navController,
+                viewModel = viewModel
+            )
+        }
     }
 }
 
 fun NavOptionsBuilder.popUpToTop(navController: NavController) {
     popUpTo(navController.currentBackStackEntry?.destination?.route ?: return) {
         inclusive = true
+        saveState=true
     }
 }

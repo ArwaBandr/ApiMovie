@@ -28,7 +28,6 @@ class PopularViewModel@Inject constructor(
  }
     private fun getArtWorks(){
         viewModelScope.launch {
-
             getPopularMoviewUseCase.invoke().distinctUntilChanged()
                 .cachedIn(viewModelScope)
                 .collect{

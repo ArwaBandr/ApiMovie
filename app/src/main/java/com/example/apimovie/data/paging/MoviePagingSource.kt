@@ -8,25 +8,34 @@ import com.example.apimovie.model.Results
 import okio.IOException
 
 class MoviePagingSource(
-    private val MovieApi:MovieApi,
-    ):PagingSource<Int, Results>(){
+    private val MovieApi: MovieApi,
+    var SelectedFunction :Boolean,
+    var QuerySearch:String ?= null
+) : PagingSource<Int, Results>() {
+
+
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Results> {
         return try {
-            val currentPage=params.key ?:1
-            val movies =MovieApi.getUpcoming(
-                apiKey = BuildConfig.TMDB_API_KEY,
+            val currentPage = params.key ?: 1
+            val movies = if (SelectedFunction)
+            {MovieApi.getUpcoming(
                 page = currentPage
-            )
+            )}else {
+                MovieApi.getsearchMulti(
+                    page = currentPage,
+                    query = QuerySearch.toString()
+                )
+            }
             LoadResult.Page(
                 data = movies.body()?.results.orEmpty(),
-                prevKey = if (currentPage ==1) null else currentPage -1,
-                nextKey = if (movies.body()?.results?.isEmpty() == true) null else movies.body()?.page!! +1
+                prevKey = if (currentPage == 1) null else currentPage - 1,
+                nextKey = if (movies.body()?.results?.isEmpty() == true) null else movies.body()?.page!! + 1
             )
-        }catch (exception: IOException){
+        } catch (exception: IOException) {
             return LoadResult.Error(exception)
-        }catch (exception: Exception){
-            return  LoadResult.Error(exception)
+        } catch (exception: Exception) {
+            return LoadResult.Error(exception)
         }
     }
 

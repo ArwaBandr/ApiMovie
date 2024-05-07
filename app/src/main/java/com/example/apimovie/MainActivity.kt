@@ -17,6 +17,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemColors
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -50,9 +52,9 @@ import com.example.apimovie.ui.theme.ApiMovieTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class  MainActivity : ComponentActivity() {
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-       // val viewModel by viewModels<PopularViewModel>()
+        // val viewModel by viewModels<PopularViewModel>()
         super.onCreate(savedInstanceState)
         setContent {
             ApiMovieTheme {
@@ -61,7 +63,7 @@ class  MainActivity : ComponentActivity() {
                     mutableStateOf(true)
                 }
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
-                showBottomBar =when(navBackStackEntry?.destination?.route){
+                showBottomBar = when (navBackStackEntry?.destination?.route) {
                     Scrrens.OnboardingScreen.rout -> false
                     else -> true
                 }
@@ -74,13 +76,16 @@ class  MainActivity : ComponentActivity() {
                     bottomBar = {
                         if (showBottomBar) {
                             NavigationBar {
-                                BottomNavigationBar(navigationSelectedItem,navController)
+                                BottomNavigationBar(navigationSelectedItem, navController)
                             }
                         }
-                        }
-                ){
-                    paddingValues ->
-                    Box (modifier = Modifier.padding(paddingValues)){
+
+                    },
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.secondary
+
+                ) { paddingValues ->
+                    Box(modifier = Modifier.padding(paddingValues)) {
                         NavGraph(navController)
                     }
                 }
@@ -91,24 +96,34 @@ class  MainActivity : ComponentActivity() {
 
 @Composable
 private fun RowScope.BottomNavigationBar(
-    navigationSelectedItem:MutableIntState,
-    navController :NavHostController
-)
-{
+    navigationSelectedItem: MutableIntState,
+    navController: NavHostController
+) {
 
     BottomNavigationItem().bottomNavigationItem()
         .forEachIndexed { index, NavigationItem ->
             NavigationBarItem(selected = index == navigationSelectedItem.intValue,
-                label = { Text(text = NavigationItem.route)},
+                label = { Text(text = NavigationItem.route) },
                 icon = {
-                    Icon(NavigationItem.icon, contentDescription =NavigationItem.label )
+                    Icon(NavigationItem.icon, contentDescription = NavigationItem.label)
                 },
+
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = MaterialTheme.colorScheme.primary,
+                    unselectedIconColor = MaterialTheme.colorScheme.primaryContainer,
+                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                    indicatorColor = MaterialTheme.colorScheme.onSecondary,
+                    unselectedTextColor = MaterialTheme.colorScheme.primaryContainer
+                ),
                 onClick = {
-                    navigationSelectedItem.intValue =index
-                    navController.navigate(NavigationItem.route){
+                    navigationSelectedItem.intValue = index
+                    navController.navigate(NavigationItem.route) {
                         popUpToTop(navController)
+                        restoreState=true
+                        launchSingleTop=true
                     }
                 }
-                )
+
+            )
         }
 }
