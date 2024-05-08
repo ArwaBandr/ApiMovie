@@ -10,6 +10,8 @@ import com.example.apimovie.model.GetMovieDetailsResponse
 import com.example.apimovie.model.Results
 import com.example.apimovie.model.SearchResponse
 import com.example.apimovie.model.UIState
+import com.example.apimovie.model.UserAccount
+import com.example.apimovie.model.UserTokenResponse
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -55,5 +57,42 @@ class PopularMovieRepositry @Inject constructor(val movieApi:MovieApi){
               config = PagingConfig(pageSize = 15, prefetchDistance = 2),
               pagingSourceFactory = {MoviePagingSource(movieApi,false,SearchQuery)}
           ).flow
+    }
+    suspend fun getUserToken():UIState<UserTokenResponse>{
+        try {
+            val response = movieApi.getUserToken()
+            if (response.isSuccessful && response.body() != null){
+                return UIState.Success(response.body())
+            }else{
+                return UIState.Empty(message = response.message().toString())
+            }
+        }catch (e:Exception){
+            return UIState.Error(e.message.toString())
+        }
+    }
+
+    suspend fun getSessionId(requestToken:String):UIState<UserTokenResponse>{
+        try {
+            val response = movieApi.getSessionId(requestToken=requestToken)
+            if (response.isSuccessful && response.body() != null){
+                return UIState.Success(response.body())
+            }else{
+                return UIState.Empty(message = response.message().toString())
+            }
+        }catch (e:Exception){
+            return UIState.Error(e.message.toString())
+        }
+    }
+    suspend fun getUserAccount(sessionId:String):UIState<UserAccount>{
+        try {
+            val response = movieApi.getUserAccount(sessionId=sessionId)
+            if (response.isSuccessful && response.body() != null){
+                return UIState.Success(response.body())
+            }else{
+                return UIState.Empty(message = response.message().toString())
+            }
+        }catch (e:Exception){
+            return UIState.Error(e.message.toString())
+        }
     }
 }

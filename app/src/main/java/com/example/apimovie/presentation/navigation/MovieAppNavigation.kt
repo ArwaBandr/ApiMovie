@@ -1,13 +1,9 @@
 package com.example.apimovie.presentation.navigation
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -25,6 +21,8 @@ import com.example.apimovie.presentation.screens.details.DetailsScreen
 import com.example.apimovie.presentation.screens.details.DetailsViewModel
 import com.example.apimovie.presentation.screens.popular.MainScreen
 import com.example.apimovie.presentation.screens.popular.PopularViewModel
+import com.example.apimovie.presentation.screens.profile.ProfileScreen
+import com.example.apimovie.presentation.screens.profile.ProfileViewModel
 import com.example.apimovie.presentation.screens.search.SearchScreen
 import com.example.apimovie.presentation.screens.search.SearchViewModel
 
@@ -90,13 +88,8 @@ fun NavGraph(navController: NavHostController = rememberNavController()) {
           SearchScreen(viewModel,navController)
         }
         composable(Scrrens.Profile.rout) {
-            Column(
-                modifier = androidx.compose.ui.Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.onSecondary)
-            ) {
-
-            }
+            val viewModel = hiltViewModel<ProfileViewModel>()
+          ProfileScreen(viewModel,navController)
         }
 
         composable("${Scrrens.Details.rout}/{moviId}",
