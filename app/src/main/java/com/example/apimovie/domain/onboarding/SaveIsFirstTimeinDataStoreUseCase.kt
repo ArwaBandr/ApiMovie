@@ -6,7 +6,7 @@ import javax.inject.Singleton
 
 @Singleton
 class SaveIsFirstTimeinDataStoreUseCase @Inject constructor(private val dataStore: MovieAppDataStore){
-    suspend operator fun invoke(ShowTipsPages: Boolean){
-       return dataStore.SaveOnBoardingsatte(ShowPerfsPage =ShowTipsPages)
+    suspend operator fun invoke(showPerfsPage: Boolean){
+       return dataStore.saveOnBoardingsatte(showPerfsPage =showPerfsPage)
     }
 }

@@ -26,7 +26,7 @@ class OnBoardingViewModel @Inject constructor(
     }
     private fun getonBoardingState(){
         viewModelScope.launch {
-            OnBoardingCompleted.value=getIsSaveFirstTimeDataStoreUseCase().stateIn(viewModelScope).value
+            OnBoardingCompleted.value= getIsSaveFirstTimeDataStoreUseCase().stateIn(viewModelScope).value
             startDistination=if (OnBoardingCompleted.value) Scrrens.mainScreen.rout else Scrrens.OnboardingScreen.rout
         }
     }
@@ -34,7 +34,7 @@ class OnBoardingViewModel @Inject constructor(
     fun saveOnBoardingState(showOnBoardingPage:Boolean){
 
         viewModelScope.launch (Dispatchers.IO){
-            saveFirstTimeDataStoreUseCase(ShowTipsPages=showOnBoardingPage)
+            saveFirstTimeDataStoreUseCase(showPerfsPage=showOnBoardingPage)
         }
 
     }

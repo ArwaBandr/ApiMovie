@@ -34,6 +34,7 @@ fun ProfileScreen(viewModel: ProfileViewModel, navController: NavHostController)
     LaunchedEffect(Unit) {
         viewModel.getUserToken()
     }
+
     val userToken = viewModel.userTokenState.collectAsState()
     val sessionId = viewModel.userSessionIdtState.collectAsState()
     val userAccount = viewModel.userAccountState.collectAsState()

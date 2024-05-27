@@ -2,11 +2,9 @@ package com.example.apimovie.presentation.screens.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagingData
 import com.example.apimovie.domain.User.GetSessionIdUseCase
 import com.example.apimovie.domain.User.GetUserAccountUseCase
 import com.example.apimovie.domain.User.GetUserTokenUseCase
-import com.example.apimovie.model.Results
 import com.example.apimovie.model.UIState
 import com.example.apimovie.model.UserAccount
 import com.example.apimovie.model.UserTokenResponse
@@ -16,14 +14,18 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ProfileViewModel @Inject constructor(private val getUserTokenUseCase: GetUserTokenUseCase,
+class ProfileViewModel @Inject constructor(
+    private val getUserTokenUseCase: GetUserTokenUseCase,
     private val getSessionIdUseCase: GetSessionIdUseCase,
     private val getUserAccountUseCase: GetUserAccountUseCase
-    ):ViewModel(){
+) : ViewModel() {
 
-    var userTokenState: MutableStateFlow<UIState<UserTokenResponse>> = MutableStateFlow(UIState.Loading())
-    var userSessionIdtState: MutableStateFlow<UIState<UserTokenResponse>> = MutableStateFlow(UIState.Loading())
-    var userAccountState: MutableStateFlow<UIState<UserAccount>> = MutableStateFlow(UIState.Loading())
+    var userTokenState: MutableStateFlow<UIState<UserTokenResponse>> =
+        MutableStateFlow(UIState.Loading())
+    var userSessionIdtState: MutableStateFlow<UIState<UserTokenResponse>> =
+        MutableStateFlow(UIState.Loading())
+    var userAccountState: MutableStateFlow<UIState<UserAccount>> =
+        MutableStateFlow(UIState.Loading())
 
     fun getUserToken(){
         viewModelScope.launch {
@@ -38,17 +40,20 @@ class ProfileViewModel @Inject constructor(private val getUserTokenUseCase: GetU
         }
 
 
-    fun getSessioId(requstedToken:String){
+    fun getSessioId(requstedToken: String) {
         viewModelScope.launch {
             when (val response = getSessionIdUseCase.invoke(requstedToken)) {
                 is UIState.Success -> userSessionIdtState.value = UIState.Success(response.data)
                 is UIState.Error -> userSessionIdtState.value = UIState.Error(response.error)
-                is UIState.Empty -> userSessionIdtState.value = UIState.Empty(title = response.title)
+                is UIState.Empty -> userSessionIdtState.value =
+                    UIState.Empty(title = response.title)
+
                 is UIState.Loading -> userSessionIdtState.value = UIState.Loading()
             }
         }
     }
-    fun getAccountId(sessionId:String){
+
+    fun getAccountId(sessionId: String) {
         viewModelScope.launch {
             when (val response = getUserAccountUseCase.invoke(sessionId)) {
                 is UIState.Success -> userAccountState.value = UIState.Success(response.data)
@@ -58,5 +63,5 @@ class ProfileViewModel @Inject constructor(private val getUserTokenUseCase: GetU
             }
         }
     }
-    }
+}
 
